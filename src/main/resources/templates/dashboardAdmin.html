@@ -10,15 +10,10 @@
 	<meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
 	<meta name="generator" content="Hugo 0.122.0">
 	<title>Panel de Administracion</title>
-
 	<link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/dashboard/">
-
-
-
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
-
 	<link href="../assets/dist/css/bootstrap.min.css" rel="stylesheet">
-
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	<style>
 		.bd-placeholder-img {
 			font-size: 1.125rem;
@@ -107,7 +102,7 @@
 
 <body>
 	<div th:include="fragments/aside :: aside"></div>
-		<div th:include="fragments/theme :: theme"></div>
+	<div th:include="fragments/theme :: theme"></div>
 
 	<div class="container-fluid">
 		<div class="row">
@@ -115,8 +110,39 @@
 				<div th:include="fragments/menuAsideAdmin :: menuAsideAdmin"></div>
 			</div>
 			<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-				<canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+				<canvas id="myChart2"></canvas>
 
+				<script th:inline="javascript">
+					/* Obtener los datos de pedidos por día desde el modelo de Thymeleaf */
+					var datosPedidosPorDia = /*[[${datosPedidosPorDia}]]*/ {};
+
+					/* Obtener las fechas y cantidades de pedidos */
+					var fechas = Object.keys(datosPedidosPorDia);
+					var cantidades = Object.values(datosPedidosPorDia);
+
+					/* Dibujar el gráfico usando Chart.js */
+					var ctx = document.getElementById('myChart2').getContext('2d');
+					var myChart = new Chart(ctx, {
+						type: 'bar',
+						data: {
+							labels: fechas,
+							datasets: [{
+								label: 'Pedidos por día',
+								data: cantidades,
+								backgroundColor: 'rgba(225, 165, 70, 0.5)',
+								borderColor: 'rgba(54, 162, 235, 1)',
+								borderWidth: 1
+							}]
+						},
+						options: {
+							scales: {
+								y: {
+									beginAtZero: true
+								}
+							}
+						}
+					});
+				</script>
 			</main>
 		</div>
 	</div>

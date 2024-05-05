@@ -1,5 +1,7 @@
 package curso.java.tienda.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import curso.java.tienda.model.UsuarioVO;
 import curso.java.tienda.repository.UsuarioRepository;
+import curso.java.tienda.service.PedidoService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -17,6 +20,9 @@ public class LoginController {
 
 	@Autowired
 	private UsuarioRepository usuarioRepository;
+	
+	@Autowired
+    private PedidoService pedidoService;
 
 	@GetMapping("/TIENDA_CARLOS_GARCIA_CACHON_ADMINISTRACION")
 	public String index() {
@@ -24,8 +30,9 @@ public class LoginController {
 	}
 
 	@GetMapping("/index")
-	public String dashboard(HttpSession session) {
+	public String dashboard(HttpSession session, Model model) {
 		UsuarioVO usuario = (UsuarioVO) session.getAttribute("user");
+
 		if (usuario.getId_rol() == 2) {
 		    return "dashboard";
 		} else if (usuario.getId_rol() == 3) {
@@ -35,6 +42,7 @@ public class LoginController {
 		}
 	}
 
+	
 
 	@PostMapping("/index")
 	public String procesoLogin(@RequestParam String email, @RequestParam String password, HttpSession session,  Model model) {
@@ -50,6 +58,10 @@ public class LoginController {
 			// encriptada
 			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 			if (encoder.matches(password, hashedPassword)) {
+				Map<String, Long> datosPedidosPorDia = pedidoService.obtenerPedidosPorDia();
+
+		        // Agregar los datos al modelo para pasarlos a la vista
+		        model.addAttribute("datosPedidosPorDia", datosPedidosPorDia);
 				// Verificar si el usuario tiene el rol id 2 (suponiendo que el campo sea idRol)
 				if (usuario.getId_rol() == 2) {
 					session.setAttribute("user", usuario);

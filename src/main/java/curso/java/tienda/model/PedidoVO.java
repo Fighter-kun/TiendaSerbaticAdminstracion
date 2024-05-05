@@ -1,7 +1,6 @@
 package curso.java.tienda.model;
 
 import java.sql.Timestamp;
-import java.util.Date;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
