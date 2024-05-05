@@ -1,5 +1,6 @@
 package curso.java.tienda.controller;
 
+import java.io.IOException;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.ui.Model;
 
 import curso.java.tienda.model.ProductoVO;
@@ -43,7 +46,7 @@ public class ProductController {
 	}
 	
 	@PostMapping("/products")
-	public String createProduct(@ModelAttribute ProductoVO producto) {
+	public String createProduct(@ModelAttribute ProductoVO producto, @RequestParam("imagen") MultipartFile imagen) {
 	    if (producto.getId() != 0) {
 	        // Actualización
 	        productRepository.findById(producto.getId()).ifPresent(p -> {
@@ -53,17 +56,28 @@ public class ProductController {
 	            p.setImpuesto(producto.getImpuesto()); 
 	            p.setStock(producto.getStock());
 	            p.setId_categoria(producto.getId_categoria()); 
-	            p.setImagen(producto.getImagen()); 
+	            try {
+	                p.setImagen(imagen.getBytes()); // Guarda los bytes de la imagen en el campo 'imagen'
+	            } catch (IOException e) {
+	                // Maneja la excepción apropiadamente
+	                e.printStackTrace();
+	            }
 
 	            productRepository.save(p);
 	        });
 	    } else {
-	        
 	        producto.setFecha_alta(new Date());
+	        try {
+	            producto.setImagen(imagen.getBytes()); // Guarda los bytes de la imagen en el campo 'imagen'
+	        } catch (IOException e) {
+	            // Maneja la excepción apropiadamente
+	            e.printStackTrace();
+	        }
 	        productRepository.save(producto);
 	    }
 	    return "redirect:/products";
 	}
+
 
 	
 }
